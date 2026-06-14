@@ -4,23 +4,31 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\DB;
 class ProductController extends Controller
 {
-    public function test1()
-    {
-        return redirect()->route('admin.home');
-    }
-    public function test2()
-    {
-        return redirect('/admin/dashboard');
-    }
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+         $list = DB::table('products')
+        ->join('categories', 'products.category_id', '=', 'categories.cateid')
+        ->leftJoin('brands', 'products.brand_id', '=', 'brands.id')
+        ->select(
+            'products.id',
+            'products.productname',
+            'products.price',
+            'products.pricediscount',
+            'products.image',
+            'products.status',
+            'categories.catename',
+            'brands.brandname'
+        )
+        ->orderBy('products.productname')
+        ->get();
+
+    return view('admin.products.index', compact('list'));
     }
 
     /**
@@ -28,7 +36,7 @@ class ProductController extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.products.create');
     }
 
     /**

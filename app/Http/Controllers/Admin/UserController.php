@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\DB;
 class UserController extends Controller
 {
     /**
@@ -12,7 +12,23 @@ class UserController extends Controller
      */
     public function index()
     {
-        //
+         $list = DB::table('users')
+        ->select(
+            'userid',
+            'fullname',
+            'username',
+            'email',
+            'phone',
+            'address',
+            'gender',
+            'birthday',
+            'role',
+            'status'
+        )
+        ->orderBy('userid', 'desc')
+        ->get();
+
+    return view('admin.users.index', compact('list'));
     }
 
     /**

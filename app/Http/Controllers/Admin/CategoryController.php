@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\DB;
 class CategoryController extends Controller
 {
     /**
@@ -12,7 +12,12 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        return  "category index";
+        $list = DB::table('categories')
+         ->select('cateid', 'catename', 'slug', 'image', 'status')
+            ->where('status', 1)
+            ->orderBy('catename')
+            ->get();
+            return view('admin.categories.index', compact('list'));
     }
 
     /**
@@ -20,7 +25,7 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        return "trang tao category";
+        return view('admin.categories.create');
     }
 
     /**
