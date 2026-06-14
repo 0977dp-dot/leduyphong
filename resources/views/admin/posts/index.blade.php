@@ -3,6 +3,7 @@
 @section('title', 'Bài viết')
 
 @section('content')
+
 <h2 class="mb-3">DANH SÁCH BÀI VIẾT</h2>
 
 <table class="table table-bordered table-hover table-striped">
@@ -18,7 +19,7 @@
     </thead>
 
     <tbody>
-        @foreach($list as $item)
+        @forelse($list as $item)
         <tr>
             <td>{{ $loop->iteration }}</td>
 
@@ -30,7 +31,8 @@
             <td>{{ $item->title }}</td>
             <td>{{ $item->slug }}</td>
 
-            <td>{{ $item->author }}</td>
+            {{-- user_id -> cần join users để lấy fullname --}}
+            <td>{{ $item->fullname ?? 'N/A' }}</td>
 
             <td>
                 @if($item->status == 1)
@@ -40,7 +42,12 @@
                 @endif
             </td>
         </tr>
-        @endforeach
+        @empty
+        <tr>
+            <td colspan="6" class="text-center">Không có dữ liệu</td>
+        </tr>
+        @endforelse
     </tbody>
 </table>
+
 @endsection

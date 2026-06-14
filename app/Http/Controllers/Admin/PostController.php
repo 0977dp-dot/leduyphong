@@ -5,27 +5,31 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\Post;
 class PostController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index($limit=10)
     {
-        $list = DB::table('posts')
-        ->join('users', 'posts.user_id', '=', 'users.userid')
+        $list = DB::table('users')
         ->select(
-            'posts.id',
-            'posts.title',
-            'posts.slug',
-            'posts.image',
-            'posts.status',
-            'users.fullname as author'
+            'userid',
+            'fullname',
+            'username',
+            'email',
+            'phone',
+            'address',
+            'gender',
+            'birthday',
+            'role',
+            'status'
         )
-        ->orderBy('posts.id', 'desc')
-        ->get();
+        ->orderBy('userid', 'desc')
+        ->paginate(10);
 
-    return view('admin.posts.index', compact('list'));
+    return view('admin.users.index', compact('list'));
     }
 
     /**

@@ -4,39 +4,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>@yield('title', 'My Web')</title>
+    <title>@yield('title', 'Admin Panel')</title>
 
-    {{-- CDN Bootstrap CSS --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" rel="stylesheet">
 
-    {{-- CDN Bootstrap Icons --}}
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        body {
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        /* SIDEBAR FIXED */
+        .sidebar {
+            width: 260px;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background: #212529;
+        }
+
+        /* RIGHT AREA */
+        .main-wrapper {
+            margin-left: 260px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: #fff;
+            border-bottom: 1px solid #ddd;
+        }
+
+        main {
+            flex: 1;
+            background: #f8f9fa;
+            padding: 20px;
+        }
+
+        footer {
+            background: #212529;
+            color: white;
+            text-align: center;
+            padding: 10px;
+        }
+    </style>
 </head>
 
 <body>
-    <div class="container-fluid">
-        <div class="row min-vh-100">
-            {{-- SIDEBAR --}}
-            <div class="col-md-2 bg-dark text-white p-0">
-                @include('admin._partials.sidebar')
-            </div>
-            {{-- RIGHT CONTENT --}}
-            <div class="col-md-10 d-flex flex-column p-0">
-                {{-- HEADER --}}
-                <div class="border-bottom bg-white">
-                    @include('admin._partials.header')
-                </div>
-                {{-- MAIN CONTENT --}}
-                <main class="flex-grow-1 bg-light p-3">
-                    @yield('content')
-                </main>
-                {{-- FOOTER --}}
-                <footer class="bg-dark text-white text-center py-2">
-                    @include('admin._partials.footer')
-                </footer>
-            </div>
-        </div>
+
+    {{-- SIDEBAR --}}
+    <div class="sidebar text-white p-3">
+        @include('admin._partials.sidebar')
+    </div>
+
+    {{-- RIGHT CONTENT --}}
+    <div class="main-wrapper">
+
+        {{-- HEADER --}}
+        <header>
+            @include('admin._partials.header')
+        </header>
+
+        {{-- MAIN --}}
+        <main>
+            @yield('content')
+        </main>
+
+        {{-- FOOTER --}}
+        <footer>
+            @include('admin._partials.footer')
+        </footer>
+
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
