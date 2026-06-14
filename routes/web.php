@@ -29,4 +29,15 @@ Route::prefix('admin')->group(function () {
     Route::resource('user', UserController::class);
     Route::resource('product', ProductController::class);
 });
+//admin
+Route::get('admin/dashboard', function () {
+    return view('admin.dashboard');
+});
+
+Route::get('/admin/dashboard', function () {
+    return view('admin.dashboard');
+})->name('admin.home');
+
+Route::get('/test1', [ProductController::class, 'test1']);
+Route::get('/test2', [ProductController::class, 'test2']);
 
