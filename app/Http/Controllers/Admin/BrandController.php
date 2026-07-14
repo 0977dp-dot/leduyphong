@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\BrandRequest;
 use App\Models\Brand;
-use Illuminate\Http\Request;
 
 class BrandController extends Controller
 {
@@ -22,7 +22,7 @@ class BrandController extends Controller
         return view('admin.brands.create');
     }
 
-    public function store(Request $request)
+    public function store(BrandRequest $request)
     {
         try {
             Brand::create([
@@ -46,44 +46,28 @@ class BrandController extends Controller
         return view('admin.brands.edit', compact('brand'));
     }
 
-    public function update(Request $request, string $id)
-{
-    try {
+    public function update(BrandRequest $request, string $id)
+    {
+        try {
+            $brand = Brand::findOrFail($id);
 
-        $brand = Brand::findOrFail($id);
+            $brand->update([
+                'brandname' => $request->brandname,
+                'slug' => $request->slug,
+                'image' => $request->image,
+                'status' => $request->status,
+                'sort_order' => $request->sort_order,
+                'description' => $request->description,
+            ]);
 
-        $brand->update([
-
-            'brandname'   => $request->brandname,
-
-            'slug'        => $request->slug,
-
-            'image'       => $request->image,
-
-            'status'      => $request->status,
-
-            'sort_order'  => $request->sort_order,
-
-            'description' => $request->description,
-
-        ]);
-
-        return redirect()
-
-            ->route('admin.brands.index')
-
-            ->with('success', 'Cập nhật thành công.');
-
-    } catch (\Exception $e) {
-
-        return redirect()
-
-            ->back()
-
-            ->withInput()
-
-            ->with('error', 'Cập nhật thất bại.');
+            return redirect()
+                ->route('admin.brands.index')
+                ->with('success', 'Cập nhật thành công.');
+        } catch (\Exception $e) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'Cập nhật thất bại.');
+        }
     }
-}
-
 }

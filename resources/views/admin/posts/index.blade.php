@@ -26,7 +26,25 @@
             <td>{{ $item->slug }}</td>
             <td>{{ $item->fullname ?? 'N/A' }}</td>
             <td>{{ $item->status == 1 ? 'Xuất bản' : 'Nháp' }}</td>
-            <td><a href="{{ route('admin.posts.edit', $item->id) }}" class="btn btn-warning btn-sm">Sửa</a></td>
+            <td>
+                <a href="{{ route('admin.posts.edit', $item->id) }}"
+                    class="btn btn-warning btn-sm">
+                    Sửa
+                </a>
+
+                <form action="{{ route('admin.posts.destroy', $item->id) }}"
+                    method="POST"
+                    style="display:inline;">
+                    @csrf
+                    @method('DELETE')
+
+                    <button type="submit"
+                        class="btn btn-danger btn-sm"
+                        onclick="return confirm('Bạn có chắc muốn xóa bài viết này?')">
+                        Xóa
+                    </button>
+                </form>
+                </td>
         </tr>@empty<tr>
             <td colspan="6" class="text-center">Không có dữ liệu</td>
         </tr>@endforelse
