@@ -8,7 +8,9 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Str;
+use App\Models\ProductImage;
+use Illuminate\Support\Facades\Storage;
 class ProductController extends Controller
 {
     public function index($limit = 10)
@@ -34,7 +36,16 @@ class ProductController extends Controller
     public function store(ProductRequest $request)
     {
         try {
-            Product::create([
+            // Upload hình ảnh chính
+            $fileName = null;
+            if ($request->hasFile('img')) {
+                $file = $request->file('img');
+                $fileName = Str::slug($request->productname)
+                    . '-' . time()
+                    . '.' . $file->extension();
+                $file->storeAs('products', $fileName, 'public');
+            }
+            $product = Product::create([
                 'productname' => $request->productname,
                 'slug' => $request->slug,
                 'catid' => $request->catid,
@@ -43,8 +54,25 @@ class ProductController extends Controller
                 'pricediscount' => $request->pricediscount,
                 'description' => $request->description,
                 'status' => $request->status,
+                'image' => $fileName,
             ]);
-
+            // Upload hình ảnh phụ
+            if ($request->hasFile('imgs')) {
+                $i = 1;
+                $time = time(); // cùng timestamp
+                foreach ($request->file('imgs') as $file) {
+                    
+                    $fileName = $product->id
+                        . '_' . $time . '_' . $i . '.' . $file->extension();
+                    $file->storeAs('products', $fileName, 'public');
+                    // Lưu vào bảng product_images
+                    ProductImage::create([
+                        'product_id' => $product->id,
+                        'image' => $fileName,
+                    ]);
+                    $i++;
+                }
+            }
             return redirect()->route('admin.products.index')
                 ->with('success', 'Thêm sản phẩm thành công.');
         } catch (\Exception $e) {
@@ -57,12 +85,19 @@ class ProductController extends Controller
     public function edit(string $id)
     {
         $product = Product::findOrFail($id);
+        $product = Product::with('images')->findOrFail($id);
         $categories = Category::select('cateid', 'catename')
             ->orderBy('catename')
             ->get();
         $brands = Brand::select('id', 'brandname')
             ->orderBy('brandname')
             ->get();
+
+        try {
+            $product->images()->get();
+        } catch (\Exception $e) {
+            $product->setRelation('images', collect());
+        }
 
         return view('admin.products.edit', compact('product', 'categories', 'brands'));
     }
@@ -71,6 +106,19 @@ class ProductController extends Controller
     {
         try {
             $product = Product::findOrFail($id);
+            $fileName = $product->image;
+
+            if ($request->hasFile('img')) {
+                if ($fileName) {
+                    Storage::disk('public')->delete('products/' . $fileName);
+                }
+
+                $file = $request->file('img');
+                $fileName = Str::slug($request->productname)
+                    . '-' . time()
+                    . '.' . $file->extension();
+                $file->storeAs('products', $fileName, 'public');
+            }
 
             $product->update([
                 'productname' => $request->productname,
@@ -81,8 +129,28 @@ class ProductController extends Controller
                 'pricediscount' => $request->pricediscount,
                 'description' => $request->description,
                 'status' => $request->status,
+                'image' => $fileName,
             ]);
+            // Upload hình ảnh phụ
+            if ($request->hasFile('imgs')) {
+                try {
+                    $i = 1;
+                    $time = time();
+                    foreach ($request->file('imgs') as $file) {
+                        $fileName = $product->id
+                            . '_' . $time . '_' . $i . '.' . $file->extension();
+                        $file->storeAs('products', $fileName, 'public');
 
+                        ProductImage::create([
+                            'product_id' => $product->id,
+                            'image' => $fileName,
+                        ]);
+                        $i++;
+                    }
+                } catch (\Exception $e) {
+                    // Bỏ qua nếu bảng product_images chưa tồn tại
+                }
+            }
             return redirect()
                 ->route('admin.products.index')
                 ->with('success', 'Cập nhật thành công.');
@@ -93,4 +161,36 @@ class ProductController extends Controller
                 ->with('error', 'Cập nhật thất bại.');
         }
     }
+    public function deleteImage($productId, $imageId)
+    {
+        try {
+            $image = ProductImage::where('product_id', $productId)
+                ->find($imageId);
+
+            if (!$image) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Ảnh không tồn tại'
+                ], 404);
+            }
+
+            $path = 'products/' . $image->image;
+            if (Storage::disk('public')->exists($path)) {
+                Storage::disk('public')->delete($path);
+            }
+
+            $image->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Xóa ảnh phụ thành công'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bảng ảnh phụ chưa được tạo'
+            ], 500);
+        }
+    }
+
 }

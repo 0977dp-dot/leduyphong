@@ -15,6 +15,7 @@ class ProductRequest extends FormRequest
     public function rules(): array
     {
         $product = $this->route('product');
+        $isUpdate = !is_null($product);
 
         return [
             'productname' => [
@@ -32,7 +33,25 @@ class ProductRequest extends FormRequest
                 Rule::unique('products', 'slug')->ignore($product),
                 'regex:/^[a-z0-9_-]+$/',
             ],
-            'price' => ['required', 'numeric', 'min:0', 'max:10000000'],
+            'img' => [
+                $isUpdate ? 'nullable' : 'required',
+                'image',
+                'mimes:jpg,jpeg,png,webp',
+                'max:200',
+            ],
+
+            // mảng
+            'imgs' => [
+                'nullable',
+                'array',
+            ],
+            // từng phần tử trong file
+            'imgs.*' => [
+                'image',
+                'mimes:jpg,jpeg,png,webp',
+                'max:200',
+            ],
+            'price' => ['required', 'numeric', 'min:0', 'max:1000000000'],
             'pricediscount' => ['nullable', 'numeric', 'min:0', 'lte:price'],
             'status' => 'required|in:0,1',
             'catid' => ['required', 'exists:categories,cateid'],
@@ -56,6 +75,10 @@ class ProductRequest extends FormRequest
             'catid.exists' => ':attribute không tồn tại.',
             'brandid.exists' => ':attribute không tồn tại.',
             'not_regex' => ':attribute không được chứa các ký tự đặc biệt.',
+            'image' => ':attribute phải là hình ảnh.',
+            'mimes' => ':attribute chỉ chấp nhận các định dạng: jpg, jpeg, png, webp.',
+            'image.max' => ':attribute không được vượt quá 200 KB.',
+            'images.*.max' => ':attribute không được vượt quá 200 KB.',
         ];
     }
 

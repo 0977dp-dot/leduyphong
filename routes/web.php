@@ -26,6 +26,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('users', UserController::class);
     Route::resource('products', ProductController::class);
     Route::resource('posts', PostController::class);
+     Route::delete('products/{product}/images/{image}', [ProductController::class, 'deleteImage']);
 });
 
 Route::get('/admin/dashboard', function () {

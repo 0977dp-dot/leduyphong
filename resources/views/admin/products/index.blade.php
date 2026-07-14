@@ -38,8 +38,9 @@
             <td>{{ $loop->iteration }}</td>
 
             <td>
-                <img src="{{ asset($item->image ? 'images/products/'.$item->image : 'images/default.png') }}"
-                    style="width:50px;height:50px;object-fit:cover;">
+                @if ($item->image)
+                <img src="{{ asset('storage/products/' . $item->image) }}" width="80" class="img-thumbnail">
+                @endif
             </td>
 
             <td>{{ $item->productname }}</td>

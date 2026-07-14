@@ -14,7 +14,7 @@
             @include('admin._partials.errors')
             <x-admin.alert type="danger" :message="session('error')" />
 
-            <form action="{{ route('admin.brands.update', $brand->id) }}" method="POST">
+            <form action="{{ route('admin.brands.update', $brand->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
                 <div class="row g-4">
@@ -42,6 +42,22 @@
                         </div>
                     </div>
                 </div>
+                <div class="mb-3 img-group">
+                    <label class="form-label">Hình ảnh</label>
+                    <input type="file" name="img" class="form-control img-input">
+                    <div class="img-preview mt-2">
+                        @if($brand->image)
+                        <img src="{{ asset('storage/brands/' . $brand->image) }}" alt="{{ $brand->name }}" width="150"
+                            class="img-thumbnail">
+                        @endif
+                    </div>
+                </div>
+                {{-- hiển thị lỗi cho trường img --}}
+                @error('img')
+                <span class="text-danger">
+                    {{ $message }}
+                </span>
+                @enderror
                 <div class="mb-3">
                     <label class="form-label fw-semibold">Mô tả</label>
                     <textarea class="form-control" name="description" rows="4">{{ old('description', $brand->description) }}</textarea>

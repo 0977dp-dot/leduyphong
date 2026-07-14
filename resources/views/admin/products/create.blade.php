@@ -17,7 +17,7 @@
             @include('admin._partials.errors')
             <x-admin.alert type="danger" :message="session('error')" />
 
-            <form action="{{ route('admin.products.store') }}" method="POST">
+            <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
                 <div class="row g-4">
@@ -37,9 +37,9 @@
                             <select name="catid" class="form-select" required>
                                 <option value="">-- Chọn loại sản phẩm --</option>
                                 @foreach($categories as $category)
-                                    <option value="{{ $category->cateid }}" {{ old('catid') == $category->cateid ? 'selected' : '' }}>
-                                        {{ $category->catename }}
-                                    </option>
+                                <option value="{{ $category->cateid }}" {{ old('catid') == $category->cateid ? 'selected' : '' }}>
+                                    {{ $category->catename }}
+                                </option>
                                 @endforeach
                             </select>
                         </div>
@@ -49,14 +49,36 @@
                             <select name="brandid" class="form-select">
                                 <option value="">-- Chọn thương hiệu --</option>
                                 @foreach($brands as $brand)
-                                    <option value="{{ $brand->id }}" {{ old('brandid') == $brand->id ? 'selected' : '' }}>
-                                        {{ $brand->brandname }}
-                                    </option>
+                                <option value="{{ $brand->id }}" {{ old('brandid') == $brand->id ? 'selected' : '' }}>
+                                    {{ $brand->brandname }}
+                                </option>
                                 @endforeach
                             </select>
                         </div>
                     </div>
+                    <div class="mb-3 img-group">
+                        <label class="form-label">Hình ảnh chính</label>
+                        <input type="file" name="img" class="form-control img-input">
+                        <div class="img-preview mt-2"></div>
+                        {{-- hiển thị lỗi cho trường img --}}
+                        @error('img')
+                        <span class="text-danger">
+                            {{ $message }}
+                        </span>
+                        @enderror
+                    </div>
 
+                    <div class="mb-3 img-group">
+                        <label class="form-label">Hình ảnh phụ</label>
+                        <input type="file" name="imgs[]" class="form-control img-input" multiple>
+                        <div class="img-preview mt-2"></div>
+                        {{-- hiển thị lỗi cho trường imgs --}}
+                        @error('imgs')
+                        <span class="text-danger">
+                            {{ $message }}
+                        </span>
+                        @enderror
+                    </div>
                     <div class="col-md-6">
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Giá</label>

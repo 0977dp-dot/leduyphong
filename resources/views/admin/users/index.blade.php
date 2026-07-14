@@ -31,12 +31,12 @@
             <td>{{ $item->role == 1 ? 'Quản trị viên' : 'Người dùng' }}</td>
             <td>{{ $item->status == 1 ? 'Hoạt động' : 'Khóa' }}</td>
             <td>
-                <a href="{{ route('admin.users.edit', $item->id) }}"
+                <a href="{{ route('admin.users.edit', $item->userid) }}"
                     class="btn btn-warning btn-sm">
                     Sửa
                 </a>
 
-                <form action="{{ route('admin.users.destroy', $item->id) }}"
+                <form action="{{ route('admin.users.destroy', $item->userid) }}"
                     method="POST"
                     style="display:inline;">
                     @csrf

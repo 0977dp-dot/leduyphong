@@ -17,7 +17,7 @@
             @include('admin._partials.errors')
             <x-admin.alert type="danger" :message="session('error')" />
 
-            <form action="{{ route('admin.products.update', $product->id) }}" method="POST">
+            <form action="{{ route('admin.products.update', $product->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
 
@@ -37,9 +37,9 @@
                             <label class="form-label fw-semibold">Loại sản phẩm</label>
                             <select name="catid" class="form-select">
                                 @foreach($categories as $category)
-                                    <option value="{{ $category->cateid }}" {{ old('catid', $product->catid) == $category->cateid ? 'selected' : '' }}>
-                                        {{ $category->catename }}
-                                    </option>
+                                <option value="{{ $category->cateid }}" {{ old('catid', $product->catid) == $category->cateid ? 'selected' : '' }}>
+                                    {{ $category->catename }}
+                                </option>
                                 @endforeach
                             </select>
                         </div>
@@ -48,14 +48,54 @@
                             <label class="form-label fw-semibold">Thương hiệu</label>
                             <select name="brandid" class="form-select">
                                 @foreach($brands as $brand)
-                                    <option value="{{ $brand->id }}" {{ old('brandid', $product->brandid) == $brand->id ? 'selected' : '' }}>
-                                        {{ $brand->brandname }}
-                                    </option>
+                                <option value="{{ $brand->id }}" {{ old('brandid', $product->brandid) == $brand->id ? 'selected' : '' }}>
+                                    {{ $brand->brandname }}
+                                </option>
                                 @endforeach
                             </select>
                         </div>
                     </div>
+                    <div class="mb-3 img-group">
+                        <label class="form-label">Hình ảnh chính</label>
+                        <input type="file" name="img" class="form-control img-input">
+                        <div class="img-preview mt-2">
+                            @if ($product->image)
+                            <img src="{{ asset('storage/products/' . $product->image) }}"
+                                class="img-thumbnail" width="120">
+                            @endif
+                        </div>
+                        {{-- hiển thị lỗi cho trường img --}}
+                        @error('img')
+                        <span class="text-danger">
+                            {{ $message }}
+                        </span>
+                        @enderror
+                    </div>
 
+                    <div class="mb-3 img-group">
+                        <label class="form-label">Hình ảnh phụ</label>
+                        <input type="file" name="imgs[]" class="form-control img-input" multiple>
+                        <div class="img-preview mt-2">
+                            @foreach ($product->images as $image)
+                            <div class="d-inline-block position-relative me-2 mb-2 image-item">
+                                <img src="{{ asset('storage/products/' . $image->image) }}"
+                                    class="img-thumbnail me-2 mb-2" width="100">
+                                <button type="button"
+                                    class="btn btn-sm btn-danger position-absolute top-0 end-0 remove-image-btn"
+                                    data-product-id="{{ $product->id }}"
+                                    data-image-id="{{ $image->id }}">
+                                    <i class="bi bi-x-circle"></i>
+                                </button>
+                            </div>
+                            @endforeach
+                        </div>
+                        {{-- hiển thị lỗi cho trường imgs --}}
+                        @error('imgs')
+                        <span class="text-danger">
+                            {{ $message }}
+                        </span>
+                        @enderror
+                    </div>
                     <div class="col-md-6">
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Giá</label>
@@ -97,4 +137,46 @@
         </div>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+    document.querySelectorAll('.remove-image-btn').forEach(button => {
+
+        button.addEventListener('click', function() {
+
+            // Lấy ID sản phẩm và ID ảnh
+            const productId = this.dataset.productId;
+            const imageId = this.dataset.imageId;
+
+            // Hỏi xác nhận
+            if (!confirm('Bạn có chắc muốn xóa ảnh này?')) return;
+
+            // Gửi request xóa
+            fetch(`/admin/products/${productId}/images/${imageId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+
+                    if (data.success) {
+                        // Xóa ảnh khỏi giao diện
+                        this.closest('.image-item').remove();
+                    }
+
+                    alert(data.message);
+
+                })
+                .catch(() => {
+                    alert('Xóa ảnh thất bại!');
+                });
+
+        });
+
+    });
+</script>
 @endsection
