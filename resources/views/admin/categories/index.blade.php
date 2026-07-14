@@ -4,6 +4,19 @@
 
 @section('content')
 
+@if(session('success'))
+<div class="alert alert-success">
+    {{ session('success') }}
+</div>
+@endif
+
+@if(session('error'))
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ session('error') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+@endif
+
 <h2 class="mb-3">DANH SÁCH LOẠI SẢN PHẨM</h2>
 
 <a href="{{ route('admin.categories.create') }}" class="btn btn-success mb-3">
@@ -30,7 +43,7 @@
 
             <td>
                 <img src="{{ asset($item->image ? 'images/categories/'.$item->image : 'images/default.png') }}"
-                     style="width:50px;height:50px;object-fit:cover;">
+                    style="width:50px;height:50px;object-fit:cover;">
             </td>
 
             <td>{{ $item->cateid }}</td>
@@ -39,9 +52,9 @@
 
             <td>
                 @if($item->status == 1)
-                    <span class="badge bg-success">Hiện</span>
+                <span class="badge bg-success">Hiện</span>
                 @else
-                    <span class="badge bg-danger">Ẩn</span>
+                <span class="badge bg-danger">Ẩn</span>
                 @endif
             </td>
 
@@ -49,20 +62,20 @@
             <td>
 
                 <a href="{{ route('admin.categories.edit', $item->cateid) }}"
-                   class="btn btn-warning btn-sm">
+                    class="btn btn-warning btn-sm">
                     Sửa
                 </a>
 
                 <form action="{{ route('admin.categories.destroy', $item->cateid) }}"
-                      method="POST"
-                      class="d-inline">
+                    method="POST"
+                    class="d-inline">
 
                     @csrf
                     @method('DELETE')
 
                     <button type="submit"
-                            class="btn btn-danger btn-sm"
-                            onclick="return confirm('Bạn có chắc muốn xóa?')">
+                        class="btn btn-danger btn-sm"
+                        onclick="return confirm('Bạn có chắc muốn xóa?')">
                         Xóa
                     </button>
 

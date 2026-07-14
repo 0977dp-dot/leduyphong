@@ -3,7 +3,18 @@
 @section('title', 'Sản phẩm')
 
 @section('content')
+@if(session('success'))
 
+<div class="alert alert-success">
+
+    {{ session('success') }}
+
+</div>
+
+@endif
+<a href="{{ route('admin.products.create') }}" class="btn btn-primary mb-3">
+    Thêm sản phẩm
+</a>
 <h2 class="mb-3">DANH SÁCH SẢN PHẨM</h2>
 
 <table class="table table-bordered table-hover table-striped">
@@ -17,6 +28,7 @@
             <th>Danh mục</th>
             <th>Thương hiệu</th>
             <th>Trạng thái</th>
+            <th>Thao tác</th>
         </tr>
     </thead>
 
@@ -27,7 +39,7 @@
 
             <td>
                 <img src="{{ asset($item->image ? 'images/products/'.$item->image : 'images/default.png') }}"
-                     style="width:50px;height:50px;object-fit:cover;">
+                    style="width:50px;height:50px;object-fit:cover;">
             </td>
 
             <td>{{ $item->productname }}</td>
@@ -42,18 +54,59 @@
 
             <td>
                 @if($item->status == 1)
-                    <span class="badge bg-success">Hiển thị</span>
+                <span class="badge bg-success">Hiển thị</span>
                 @else
-                    <span class="badge bg-danger">Ẩn</span>
+                <span class="badge bg-danger">Ẩn</span>
                 @endif
             </td>
+
+            <td>
+                <a href="{{ route('admin.products.edit', $item->id) }}"
+                    class="btn btn-warning btn-sm">
+                    Sửa
+                </a>
+
+                <form action="{{ route('admin.products.destroy', $item->id) }}"
+                    method="POST"
+                    style="display:inline;">
+                    @csrf
+                    @method('DELETE')
+
+                    <button type="submit"
+                        class="btn btn-danger btn-sm"
+                        onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này?')">
+                        Xóa
+                    </button>
+                </form>
+            </td>
+
         </tr>
         @empty
         <tr>
-            <td colspan="8" class="text-center">Không có dữ liệu</td>
+            <td colspan="9" class="text-center">Không có dữ liệu</td>
         </tr>
         @endforelse
     </tbody>
+
 </table>
+</table>
+
+<div class="d-flex justify-content-between align-items-center mt-4">
+
+    <div>
+        Hiển thị
+        {{ $list->firstItem() ?? 0 }}
+        -
+        {{ $list->lastItem() ?? 0 }}
+        trên tổng
+        {{ $list->total() }}
+        sản phẩm
+    </div>
+
+    <div>
+        {{ $list->links() }}
+    </div>
+
+</div>
 
 @endsection

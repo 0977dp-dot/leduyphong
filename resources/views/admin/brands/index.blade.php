@@ -3,6 +3,19 @@
 @section('title', 'Thương hiệu')
 
 @section('content')
+
+@if(session('success'))
+<div class="alert alert-success">
+    {{ session('success') }}
+</div>
+@endif
+
+@if(session('error'))
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ session('error') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+@endif
 <h2 class="mb-3">DANH SÁCH THƯƠNG HIỆU</h2>
 
 <a href="{{ route('admin.brands.create') }}" class="btn btn-success mb-3">
@@ -32,7 +45,7 @@
 
             <td>
                 <img src="{{ asset($item->image ? 'images/brands/'.$item->image : 'images/default.png') }}"
-                     style="width:50px;height:50px;object-fit:cover;">
+                    style="width:50px;height:50px;object-fit:cover;">
             </td>
 
             <td>{{ $item->brandname }}</td>
@@ -42,9 +55,9 @@
 
             <td>
                 @if($item->status == 1)
-                    <span class="badge bg-success">Hiển thị</span>
+                <span class="badge bg-success">Hiển thị</span>
                 @else
-                    <span class="badge bg-danger">Ẩn</span>
+                <span class="badge bg-danger">Ẩn</span>
                 @endif
             </td>
 
@@ -53,21 +66,21 @@
 
                 {{-- SỬA --}}
                 <a href="{{ route('admin.brands.edit', $item->id) }}"
-                   class="btn btn-warning btn-sm">
+                    class="btn btn-warning btn-sm">
                     Sửa
                 </a>
 
                 {{-- XÓA --}}
                 <form action="{{ route('admin.brands.destroy', $item->id) }}"
-                      method="POST"
-                      class="d-inline">
+                    method="POST"
+                    class="d-inline">
 
                     @csrf
                     @method('DELETE')
 
                     <button type="submit"
-                            class="btn btn-danger btn-sm"
-                            onclick="return confirm('Xóa thương hiệu này?')">
+                        class="btn btn-danger btn-sm"
+                        onclick="return confirm('Xóa thương hiệu này?')">
                         Xóa
                     </button>
 

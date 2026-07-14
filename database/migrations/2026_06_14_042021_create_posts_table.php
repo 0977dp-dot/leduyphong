@@ -17,12 +17,15 @@ return new class extends Migration
             $table->string('image', 200)->nullable();
             $table->tinyInteger('status')->default(1);
 
-            $table->foreignId('user_id')
-                ->constrained('users')
+            $table->unsignedInteger('user_id');
+
+            $table->foreign('user_id')
+                ->references('userid')
+                ->on('users')
                 ->restrictOnDelete();
 
             $table->timestamps();
-});
+        });
     }
 
     public function down(): void
