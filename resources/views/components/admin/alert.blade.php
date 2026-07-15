@@ -1,7 +1,15 @@
-@props(['type' => 'success', 'message' => ''])
+@props(['type' => 'success'])
 
-@if ($message)
-    <div class="alert alert-{{ $type }}">
-        {{ $message }}
-    </div>
+@if(session('message'))
+<div class="alert alert-danger">
+    {{ session('message') }}
+</div>
+@endif
+
+@if ($errors->any())
+<div class="alert alert-danger">
+    @foreach ($errors->all() as $error)
+    <div>{{ $error }}</div>
+    @endforeach
+</div>
 @endif
