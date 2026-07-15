@@ -23,6 +23,7 @@ return new class extends Migration
             $table->date('birthday')->nullable();
             $table->unsignedTinyInteger('role');
             $table->tinyInteger('status')->default(1);
+            $table->rememberToken(); // Thêm cột remember_token
             $table->timestamps();
         });
     }
