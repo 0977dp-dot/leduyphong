@@ -7,7 +7,9 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+
 use Illuminate\Support\Str;
+
 class AuthController extends Controller
 {
     // Hiển thị trang đăng nhập
@@ -73,7 +75,8 @@ class AuthController extends Controller
         return redirect()->route('admin.login');
     }
     // Hiển thị trang Quên mật khẩu
-     public function changePassword()
+
+    public function changePassword()
     {
         $user = Auth::user();
 
@@ -122,10 +125,12 @@ class AuthController extends Controller
     }
 
     // Hiển thị trang Quên mật khẩu
+
     public function forgotPassword()
     {
         return view('admin.users.forgotpassword');
     }
+
 
     // Xử lý quên mật khẩu
     public function postForgotpassword(Request $request)

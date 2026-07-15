@@ -6,17 +6,27 @@
         </span>
 
 
-        <div class="d-flex align-items-center gap-3">
-            <span>Xin chào <strong>{{ Auth::user()->fullname }}</strong></span>
-            <a href="{{ route('admin.change-password') }}" class="btn btn-outline-secondary btn-sm">
+        <div class="d-flex gap-3">
+
+            <span>
+                Xin chào
+                <strong>{{ Auth::user()->fullname }}</strong>
+            </span>
+
+
+            <a href="{{ route('admin.change-password') }}">
                 Đổi mật khẩu
             </a>
-            <form action="{{ route('admin.logout') }}" method="POST" class="m-0">
+
+
+            <form action="{{ route('admin.logout') }}" method="POST">
                 @csrf
-                <button type="submit" class="btn btn-link p-0 text-decoration-none">
+                <button type="submit">
                     Đăng xuất
                 </button>
             </form>
+
+
         </div>
 
     </div>
