@@ -6,6 +6,12 @@
 </div>
 @endif
 
+@if(session('email'))
+<div class="alert alert-success">
+    {{ session('email') }}
+</div>
+@endif
+
 @if ($errors->any())
 <div class="alert alert-danger">
     @foreach ($errors->all() as $error)

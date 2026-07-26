@@ -54,18 +54,23 @@ class UserController extends Controller
         try {
             $user = User::findOrFail($id);
 
-            $user->update([
+            $data = [
                 'fullname' => $request->fullname,
                 'username' => $request->username,
                 'email' => $request->email,
-                'password' => $request->password,
                 'phone' => $request->phone,
                 'address' => $request->address,
                 'gender' => $request->gender,
                 'birthday' => $request->birthday,
                 'role' => $request->role,
                 'status' => $request->status,
-            ]);
+            ];
+
+            if ($request->filled('password')) {
+                $data['password'] = $request->password;
+            }
+
+            $user->update($data);
 
             return redirect()
                 ->route('admin.users.index')
@@ -75,6 +80,22 @@ class UserController extends Controller
                 ->back()
                 ->withInput()
                 ->with('error', 'Cập nhật thất bại.');
+        }
+    }
+
+    public function destroy(string $id)
+    {
+        try {
+            $user = User::findOrFail($id);
+            $user->delete();
+
+            return redirect()
+                ->route('admin.users.index')
+                ->with('success', 'Xóa người dùng thành công.');
+        } catch (\Exception $e) {
+            return redirect()
+                ->back()
+                ->with('error', 'Xóa người dùng thất bại.');
         }
     }
 }

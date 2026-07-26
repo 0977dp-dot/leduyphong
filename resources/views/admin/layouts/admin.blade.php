@@ -1,89 +1,31 @@
-<!DOCTYPE html>
-<html lang="en">
-
+﻿<!DOCTYPE html>
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Admin Panel')</title>
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" rel="stylesheet">
-
-    <style>
-        body {
-            margin: 0;
-            overflow-x: hidden;
-        }
-
-        /* SIDEBAR FIXED */
-        .sidebar {
-            width: 260px;
-            height: 100vh;
-            position: fixed;
-            top: 0;
-            left: 0;
-            background: #212529;
-        }
-
-        /* RIGHT AREA */
-        .main-wrapper {
-            margin-left: 260px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        header {
-            background: #fff;
-            border-bottom: 1px solid #ddd;
-        }
-
-        main {
-            flex: 1;
-            background: #f8f9fa;
-            padding: 20px;
-        }
-
-        footer {
-            background: #212529;
-            color: white;
-            text-align: center;
-            padding: 10px;
-        }
-    </style>
+    <title>@yield('title')</title>
+    @vite(['resources/css/app.css','resources/js/app.js'])
 </head>
+<body class="bg-light">
+    <div class="d-flex min-vh-100">
+        <aside class="bg-dark text-white vh-100 p-3" style="width: 250px;">
+            <div class="mb-4">
+                <a href="{{ route('admin.dashboard') }}" class="text-decoration-none text-white fs-5">
+                    Admin Dashboard
+                </a>
+            </div>
+            @include('admin._partials.sidebar')
+        </aside>
 
-<body>
-
-    {{-- SIDEBAR --}}
-    <div class="sidebar text-white p-3">
-        @include('admin._partials.sidebar')
-    </div>
-
-    {{-- RIGHT CONTENT --}}
-    <div class="main-wrapper">
-
-        {{-- HEADER --}}
-        <header>
+        <div class="flex-fill">
             @include('admin._partials.header')
-        </header>
 
-        {{-- MAIN --}}
-        <main>
-            @yield('content')
-        </main>
+            <main class="container-fluid py-4">
+                @yield('content')
+            </main>
 
-        {{-- FOOTER --}}
-        <footer>
             @include('admin._partials.footer')
-        </footer>
-
+        </div>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-    {{--nhungs file preview-image.js--}}
-    <script src="{{ asset('js/preview-image.js') }}"></script>
-    @yield('scripts')
 </body>
-
 </html>

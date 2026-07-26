@@ -100,4 +100,23 @@ class BrandController extends Controller
                 ->with('error', 'Cập nhật thất bại.');
         }
     }
+
+    public function destroy(string $id)
+    {
+        try {
+            $brand = Brand::findOrFail($id);
+            if ($brand->image) {
+                Storage::disk('public')->delete('brands/' . $brand->image);
+            }
+            $brand->delete();
+
+            return redirect()
+                ->route('admin.brands.index')
+                ->with('success', 'Xóa thương hiệu thành công.');
+        } catch (\Exception $e) {
+            return redirect()
+                ->back()
+                ->with('error', 'Xóa thương hiệu thất bại.');
+        }
+    }
 }

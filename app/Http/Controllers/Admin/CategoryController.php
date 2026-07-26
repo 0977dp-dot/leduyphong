@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+
 class CategoryController extends Controller
 {
     public function index($limit = 10)
@@ -59,7 +60,7 @@ class CategoryController extends Controller
         );
 
         try {
-             // upload hình ảnh (nếu có)
+            // upload hình ảnh (nếu có)
             $fileName = null;
             if ($request->hasFile('img')) {
                 $file = $request->file('img');
@@ -143,7 +144,7 @@ class CategoryController extends Controller
                     . '.' . $file->extension();
                 $file->storeAs('categories', $fileName, 'public');
             }
-             if (!$category) {
+            if (!$category) {
                 return redirect()
                     ->route('admin.categories.index')
                     ->with('error', 'Loại sản phẩm không tồn tại.');
@@ -154,7 +155,7 @@ class CategoryController extends Controller
                 'status' => $request->status,
                 'sort_order' => $request->sort_order,
                 'description' => $request->description,
-                 'image' => $fileName
+                'image' => $fileName
             ]);
 
             return redirect()
@@ -166,5 +167,102 @@ class CategoryController extends Controller
                 ->withInput()
                 ->with('error', 'Cập nhật thất bại.');
         }
+    }
+    public function destroy(string $id)
+    {
+        try {
+            Category::findOrFail($id)->delete();
+            return redirect()
+                ->route('admin.categories.index')
+                ->with('success', 'Xóa thành công.');
+        } catch (\Exception $e) {
+            return redirect()
+                ->back()
+                ->with('error', 'Thực hiện thất bại.');
+        }
+    }
+
+    /**
+     * Restore a soft-deleted resource.
+     */
+    public function restore($id)
+    {
+        try {
+            Category::onlyTrashed()->findOrFail($id)->restore();
+            return redirect()
+                ->route('admin.categories.trash')
+                ->with('success', 'Khôi phục thành công.');
+        } catch (\Exception $e) {
+            return redirect()
+                ->back()
+                ->with('error', 'Khôi phục thất bại.');
+        }
+    }
+
+    /**
+     * Restore all soft-deleted resources.
+     */
+    public function restoreAll()
+    {
+        try {
+            Category::onlyTrashed()->restore();
+            return redirect()
+                ->route('admin.categories.trash')
+                ->with('success', 'Khôi phục tất cả thành công.');
+        } catch (\Exception $e) {
+            return redirect()
+                ->back()
+                ->with('error', 'Khôi phục tất cả thất bại.');
+        }
+    }
+
+    /**
+     * Permanently delete the specified resource.
+     */
+    public function forceDelete($id)
+    {
+        try {
+            $category = Category::onlyTrashed()->findOrFail($id);
+
+            // Xóa sản phẩm thuộc danh mục
+            $category->products()->forceDelete();
+
+            // Xóa danh mục vĩnh viễn
+            $category->forceDelete();
+
+            return redirect()
+                ->route('admin.categories.trash')
+                ->with('success', 'Xóa vĩnh viễn thành công.');
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
+        }
+    }
+
+    /**
+     * Permanently delete all soft-deleted resources.
+     */
+    public function forceDeleteAll()
+    {
+        try {
+            Category::onlyTrashed()->forceDelete();
+            return redirect()
+                ->route('admin.categories.trash')
+                ->with('success', 'Xóa vĩnh viễn tất cả thành công.');
+        } catch (\Exception $e) {
+            return redirect()
+                ->back()
+                ->with('error', 'Xóa vĩnh viễn tất cả thất bại.');
+        }
+    }
+
+    /**
+     * Display list of trashed categories.
+     */
+    public function trash()
+    {
+        $trashCount = Category::onlyTrashed()->count();
+        $list = Category::onlyTrashed()->orderBy('catename')->paginate(10);
+
+        return view('admin.categories.trash', compact('list', 'trashCount'));
     }
 }

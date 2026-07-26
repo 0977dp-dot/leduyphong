@@ -1,11 +1,26 @@
 {{-- thừa kế layout/view admin.blade.php --}}
-{{-- resources/views/admin/layouts/admin.blade.php --}}
 @extends('admin.layouts.admin')
-{{-- Gán nội dung cho vùng section 'title' --}}
-{{-- (tương ứng với @yield('title') trong layout --}}
+
+{{-- Tiêu đề --}}
 @section('title', 'Xin chào')
-{{-- Gán nội dung cho vùng section 'content' --}}
-{{-- (tương ứng với @yield('content') trong layout --}}
+
+{{-- Nội dung --}}
 @section('content')
-<h1>My Dashboard</h1>
+
+<div class="container mt-5">
+    <h1>My Dashboard</h1>
+
+    <button class="btn btn-primary">
+        Hello Bootstrap
+    </button>
+
+    <button class="btn btn-success">
+        Success
+    </button>
+
+    <button class="btn btn-danger">
+        Danger
+    </button>
+</div>
+
 @endsection

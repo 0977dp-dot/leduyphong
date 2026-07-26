@@ -22,7 +22,9 @@
 <a href="{{ route('admin.categories.create') }}" class="btn btn-success mb-3">
     + Thêm mới
 </a>
-
+<a href="{{ route('admin.categories.trash') }}" class="btn btn-secondary mb-3">
+    🗑 Thùng rác
+</a>
 <table class="table table-bordered table-hover table-striped">
     <thead class="table-dark">
         <tr>

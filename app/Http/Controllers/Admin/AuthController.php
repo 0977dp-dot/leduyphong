@@ -7,8 +7,9 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+
 
 class AuthController extends Controller
 {
@@ -126,40 +127,47 @@ class AuthController extends Controller
 
     // Hiển thị trang Quên mật khẩu
 
-    public function forgotPassword()
+    public function forgotPassword(Request $request)
     {
-        return view('admin.users.forgotpassword');
+        return view('admin.auth.forgotpassword');
     }
 
 
     // Xử lý quên mật khẩu
     public function postForgotpassword(Request $request)
     {
+        // validate - kiểm tra dữ liệu đầu vào
         $request->validate(
+            ['email' => 'required|email'],
             [
-                'email' => ['required', 'email'],
-            ],
-            [
-                'required' => ':attribute không được để trống',
-                'email' => ':attribute không đúng định dạng',
-            ],
-            [
-                'email' => 'Email',
+                'email.required' => 'Email không được để trống',
+                'email.email' => 'Email không đúng định dạng',
             ]
         );
-
+        // Kiểm tra email tồn tại
         $user = User::where('email', $request->email)->first();
-
         if (!$user) {
-            return back()
-                ->with('error', 'Email không tồn tại trong hệ thống')
+            return back()->with('error', 'Email không tồn tại')
                 ->withInput();
         }
-
-        $tempPassword = 'Admin@' . Str::random(6);
-        $user->password = Hash::make($tempPassword);
-        $user->save();
-
-        return back()->with('success', 'Mật khẩu tạm thời đã được cấp: ' . $tempPassword);
+        // Tạo mật khẩu mới
+        $passrandom = Str::random(10);
+        // Mã hóa mật khẩu
+        $passencrypted = Hash::make($passrandom);
+        // Lưu vào DB
+        $user->update([
+            'password' => $passencrypted
+        ]);
+        // Nội dung email
+        $html = "<h2>Mật khẩu mới của bạn là: $passrandom</h2>
+<p>Vui lòng đổi mật khẩu sau khi đăng nhập.</p>";
+        // Gửi email
+        Mail::html($html, function ($message) use ($request) {
+            $message->to($request->email)
+                ->subject('Đặt lại mật khẩu');
+        });
+        // điều hướng về page forgot kèm thông báo
+        return back()
+            ->with('message', 'Đã Gửi mật khẩu mới. Bạn vui lòng kiểm tra email của bạn');
     }
 }

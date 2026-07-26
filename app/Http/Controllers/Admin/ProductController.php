@@ -16,7 +16,7 @@ class ProductController extends Controller
     public function index($limit = 10)
     {
         $list = DB::table('products')
-            ->join('categories', 'products.catid', '=', 'categories.cateid')
+            ->leftJoin('categories', 'products.catid', '=', 'categories.cateid')
             ->leftJoin('brands', 'products.brandid', '=', 'brands.id')
             ->select('products.id', 'products.productname', 'products.price', 'products.pricediscount', 'products.image', 'products.status', 'categories.catename', 'brands.brandname')
             ->orderBy('products.productname')
@@ -84,7 +84,6 @@ class ProductController extends Controller
 
     public function edit(string $id)
     {
-        $product = Product::findOrFail($id);
         $product = Product::with('images')->findOrFail($id);
         $categories = Category::select('cateid', 'catename')
             ->orderBy('catename')
@@ -92,12 +91,6 @@ class ProductController extends Controller
         $brands = Brand::select('id', 'brandname')
             ->orderBy('brandname')
             ->get();
-
-        try {
-            $product->images()->get();
-        } catch (\Exception $e) {
-            $product->setRelation('images', collect());
-        }
 
         return view('admin.products.edit', compact('product', 'categories', 'brands'));
     }
@@ -193,4 +186,31 @@ class ProductController extends Controller
         }
     }
 
+    public function destroy(string $id)
+    {
+        try {
+            $product = Product::with('images')->findOrFail($id);
+
+            // Xóa ảnh chính
+            if ($product->image) {
+                Storage::disk('public')->delete('products/' . $product->image);
+            }
+
+            // Xóa các ảnh phụ
+            foreach ($product->images as $img) {
+                Storage::disk('public')->delete('products/' . $img->image);
+                $img->delete();
+            }
+
+            $product->delete();
+
+            return redirect()
+                ->route('admin.products.index')
+                ->with('success', 'Xóa sản phẩm thành công.');
+        } catch (\Exception $e) {
+            return redirect()
+                ->back()
+                ->with('error', 'Xóa sản phẩm thất bại.');
+        }
+    }
 }

@@ -76,4 +76,20 @@ class PostController extends Controller
                 ->with('error', 'Cập nhật thất bại.');
         }
     }
+
+    public function destroy(string $id)
+    {
+        try {
+            $post = Post::findOrFail($id);
+            $post->delete();
+
+            return redirect()
+                ->route('admin.posts.index')
+                ->with('success', 'Xóa bài viết thành công.');
+        } catch (\Exception $e) {
+            return redirect()
+                ->back()
+                ->with('error', 'Xóa bài viết thất bại.');
+        }
+    }
 }
